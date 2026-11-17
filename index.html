@@ -1,0 +1,57 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Jokebook</title>
+
+        <style>
+            .invisible {
+                display: none;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Jokebook</h1>
+        <button id="getCategories">Pobierz kategorie</button>
+        <button id="getJoke" class="invisible">Pobierz żart</button>
+        <select id="category" class="invisible"></select>
+        <div id="joke"></div>
+    </body>
+    
+
+    <script>
+        const getCategories = document.getElementById('getCategories');
+        const getJoke = document.getElementById('getJoke');
+        const category = document.getElementById('category');
+
+
+        function showElements() {
+            getJoke.classList.remove('invisible');
+            category.classList.remove('invisible');
+        }
+
+        getCategories.addEventListener('click', () => {
+            fetch('http://localhost:3000/jokebook/categories')
+            .then(response => response.json())
+            .then(data => {
+                data.categories.forEach(cat => {
+                    const option = document.createElement('option');
+                    option.value = cat;
+                    option.textContent = cat;
+                    category.appendChild(option);
+                });
+                showElements();
+            });
+        });
+
+        getJoke.addEventListener('click', () => {
+            fetch(`http://localhost:3000/jokebook/joke/${category.value}`)
+            .then(response => response.json())
+            .then(data => {
+                joke.innerHTML = `<p>${data.joke}</p><p>${data.response}</p>`;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</html>
